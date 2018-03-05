@@ -1,0 +1,306 @@
+deltatask_2
+<!DOCTYPE html>
+<head>
+<style>
+	canvas {
+	         border : 1px solid black;
+	         margin-left: 340px;
+	         margin-top: 60px;
+	         background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1n0HHHsK6LYqcP-bxf9PrPuyjkOg2HUExVPoTMC7NCsLro1vYPQ");
+	}
+	body{
+		background-image: url("http://4.bp.blogspot.com/-vbarPGEAzok/Udbq3DiS4PI/AAAAAAAAEF0/8iuhSlJFIhk/s1600/incredible-adventures-van-helsing-4.jpg");
+	}
+	.starter{
+		margin-left: 600px;
+		margin-top: 170px;
+		font-family: Comic;
+		font-size: 50px;
+		background-image: url("https://farm9.staticflickr.com/8583/15253098283_4dd66a3c74.jpg");
+		color: white;
+	}
+	</style>
+</head>
+<body>    
+
+
+            <button  class ="starter" onclick="startGame()">PLAY</button>
+           <script>
+
+           var gamepiece;
+           
+           var obstacle1;
+           var obstacle2;
+           var obstacle3;
+           var obstacle4;
+           var obstacle5;
+           var obstacle6;
+           var obstacle7;
+           var obstacle8;
+           var obstacle9;
+           var obstacle10;
+           var obstacle11;
+           var obstacle12;
+           var obstacle13;
+           var obstacle14;
+           var obstacle15;
+           var obstacle16;
+           var obstacle17;
+           var obstacle18;
+           var obstacle19;
+           var obstacle20;
+           var obstacle21;
+           var obstacle22;
+           var obstacle23;
+           var obstacle24;
+           var obstacle25;
+           var obstacle26;
+
+           var timer;  
+           var t=0;
+          // setInterval(updateTimer,20);
+
+
+            function startGame(){
+            	gameArea.start();
+                gamepiece = new component(20,20,"red",20,250);
+                obstacle1 = new component(130,20,"brown",0,200);
+                obstacle2 = new component(420,20,"brown",180,200);
+                obstacle3= new component(150,20,"brown",650,200);
+                obstacle4 = new component(20,120,"brown",100,220);
+                obstacle5 = new component(100,20,"brown",100,340);
+                obstacle6 = new component(20,70,"brown",180,220);
+                obstacle7 = new component(20,130,"brown",260,280);
+                obstacle8 = new component(20,140,"brown",350,220);
+                obstacle9 = new component(20,140,"brown",440,280); 
+                obstacle10 = new component(20,100,"brown",520,220);
+                obstacle11 = new component(240,20,"brown",520,320);
+                obstacle12 = new component(20,80,"brown",740,260);
+                obstacle13 =new component(20,100,"brown",560,100);
+                obstacle14 =new component(150,20,"brown",580,100);
+                obstacle15= new component(20,60,"brown",580,0);
+                obstacle16= new component( 20,100,"brown",500,40);
+                obstacle17= new component(450,20,"brown",100,120);
+                obstacle18= new component(20,60,"brown",100,140);
+                obstacle19= new component(20,165,"brown",40,0);
+                obstacle20= new component(350,20,"brown",100,50);
+                obstacle21= new component(20,40,"brown",200,0);
+                obstacle22= new component(800,1,"brown",0,0);
+                obstacle23= new component(800,1,"brown",0,400);
+                obstacle24= new component(1,400,"brown",0,0);
+                obstacle25= new component(1,400,"brown",800,0);
+                obstacle26= new component(40,3,"black",0,1);
+                timer = new component("20px","Consolas","black",360,220,"text");
+            }
+            var gameArea ={
+                           canvas : document.createElement("canvas"),
+                           start  : function(){
+                           	        this.canvas.width = 800;
+                           	        this.canvas.height = 400;
+                           	        this.context=this.canvas.getContext("2d");
+                           	        document.body.insertBefore(this.canvas,document.body.childNodes[9]); 
+                           	        this.interval =setInterval(updateGameArea,20);  
+                                     this.int = setInterval(updateTimer,5);
+                           	        window.addEventListener('keydown',function(e){gameArea.key=e.keyCode;}) 
+                           	        window.addEventListener('keyup',function(e){gameArea.key =false;}) 
+                           },
+                           clear : function(){
+                           	       this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+                           },
+                           stop : function(){
+                           	      clearInterval(this.interval);
+                           	      clearInterval(this.int);
+                           }
+
+                          }
+            function component(width,height,color,x,y,type)
+            {
+            	this.width = width;
+            	this.height = height;
+            	this.x = x;
+            	this.y = y;
+            	this.speedX = 0;
+            	this.speedY =0;
+            	this.type=type;
+            	this.update=function(){
+            		if(this.type == "text"){
+            			ctx.font = this.width + " " + this.height;
+                          ctx.fillStyle = color;
+                          ctx.fillText(this.text,this.x,this.y);
+            		}
+            		else{
+            	ctx = gameArea.context;
+            	ctx.fillStyle =color;
+            	ctx.fillRect(this.x,this.y,this.width,this.height);}
+            }
+            	this.newPos = function(){
+            		this.x += this.speedX;
+            		this.y += this.speedY;
+            	}
+
+            	this.crashWith=function(obs){
+            		var myLeft=this.x;
+            		var myRight=this.x + (this.width);
+            		var myTop =this.y;
+                    var myBottom =this.y + (this.height);
+                    var obsleft=obs.x;
+                    var obsRight=obs.x +(obs.width);
+                    var obsTop = obs.y;
+                    var obsBottom = obs.y + (obs.height);
+                    var crash = true;
+                    if((myRight<obsleft)||(myLeft>obsRight)||(myTop>obsBottom)||(myBottom<obsTop)){
+                    	crash = false;
+                    }
+                    return crash;
+            	}
+            }              
+            function updateGameArea(){
+            	if(gamepiece.crashWith(obstacle1)){
+                     gameArea.stop();
+                     alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle2)){
+                     gameArea.stop();
+                     alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle3)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle4)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle5)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle6)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle7)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle8)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle9)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle10)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle11)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle12)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle13)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle14)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle15)){
+            		gameArea.stop();
+            		alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle16)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle17)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle18)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle19)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle20)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle21)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle22)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle23)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle24)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle25)){
+            		gameArea.stop();alert("crashed :(");
+            	}
+            	else if(gamepiece.crashWith(obstacle26)){
+            		gameArea.stop();
+            		alert("you won!!!");
+            	}
+
+            	else{
+            	gameArea.clear();
+                gamepiece.speedX =0;
+                gamepiece.speedY =0;
+                if(gameArea.key && gameArea.key == 37 ){gamepiece.speedX = -1.5;}
+                	if(gameArea.key && gameArea.key == 39 ){gamepiece.speedX = 1.5;}
+                		if(gameArea.key && gameArea.key == 38){gamepiece.speedY =-1.5;}
+                			if(gameArea.key && gameArea.key == 40){gamepiece.speedY =1.5;}
+                gamepiece.newPos();
+            	gamepiece.update();
+            	obstacle1.update();
+            	obstacle2.update();
+            	obstacle3.update();obstacle4.update();obstacle5.update();obstacle6.update();obstacle7.update();obstacle8.update();obstacle9.update();obstacle10.update();obstacle11.update();
+            	obstacle12.update();obstacle13.update();obstacle14.update();obstacle15.update();obstacle16.update();obstacle17.update();obstacle18.update();obstacle19.update();obstacle20.update();obstacle21.update();obstacle22.update();obstacle23.update();obstacle24.update();obstacle25.update();obstacle26.update();
+            }
+        }
+        function updateTimer(){
+        	
+           
+        	t += 0.0063;
+        	timer.text="TIME::" +t;
+        	timer.update();
+        	if(t>=60){
+        		alert("oops !!! TIME'S UP");
+        		gameArea.stop(); 
+        	
+        	
+
+        
+
+        }
+        }
+                                     
+             
+
+
+
+            
+
+
+
+
+
+
+
+
+
+           </script>
+            
+
+
+
+
+</body>

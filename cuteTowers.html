@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		canvas{
+			background-color: black;
+			background-image: url(http://eidupont.scene7.com/is/image/eidupont/CorianEC_Deep_Black_Quartz);
+		}
+	</style>
+</head>
+<body>
+<canvas id="game" class="canvas" width="600" height="720"></canvas>
+<script type="text/javascript">
+	var canvas=document.getElementById("game");
+	var pencil=canvas.getContext("2d");
+	var bomb=new Image();
+	bomb.src="https://ak9.picdn.net/shutterstock/videos/11779949/thumb/4.jpg";
+    var block1=[],block2=[];
+    var colors=["red","lightblue","yellow","cyan","lightgreen","orange"];
+    var blockWidth=80;
+    var blockHeight=30;
+    var b,freq1=0,freq2=0;
+    var n1=1;n2=1;
+    var score =0;
+    for(var i=0;i<1;i++)
+    { 
+    	block1[i]={x:50,y:-120*i,vy:5,status:0,color:"red"};
+    	block2[i]={x:250,y:-120*i,vy:5,status:0,color:"lightblue"}
+    }
+    function drawBlocks()
+    {
+    	for(var i=0;i<block1.length;i++)
+    	{
+    		pencil.beginPath();
+	    	pencil.rect(block1[i].x,block1[i].y,blockWidth,blockHeight);
+	    	pencil.fillStyle=block1[i].color;
+	    	pencil.fill();
+	    	pencil.closePath();
+	    	pencil.rect(block1[i].x,block1[i].y,blockWidth,blockHeight);
+	    	pencil.strokeStyle="black";
+	    	pencil.lineWidth=1;
+	    	pencil.stroke();
+    	}
+    	for(var i=0;i<block2.length;i++)
+    	{
+    		pencil.beginPath();
+	    	pencil.rect(block2[i].x,block2[i].y,blockWidth,blockHeight);
+	    	pencil.fillStyle=block2[i].color;
+	    	pencil.fill();
+	    	pencil.closePath();
+	    	pencil.rect(block2[i].x,block2[i].y,blockWidth,blockHeight);
+	    	pencil.strokeStyle="black";
+	    	pencil.lineWidth=1;
+	    	pencil.stroke();
+    	}
+    }
+    function stopgame()
+	{
+        pencil.font="30px Consolas";
+    	pencil.fillStyle="white";
+    	pencil.fillText("SCORE : " +score,380 , 350);
+
+	}
+    function POSofBlocks()
+    {
+    	   for(var i=0;i<block2.length;i++)
+		    {
+		    	
+		    	if(block2[i].y+blockHeight*(n2)>=canvas.height&&block2[i].status==0)
+		       {       	  block2[i].vy=0;
+		       	          block2[i].status=1;n2++;
+		       }
+		       else
+		       {
+		       	   block2[i].y=block2[i].y+block2[i].vy;
+		       }
+		    }	
+           for(var i=0;i<block1.length;i++)
+		    {
+		    	
+		    	if(block1[i].y+blockHeight*(n1)>=canvas.height&&block1[i].status==0)
+		       {       	  block1[i].vy=0;
+		       	          block1[i].status=1;
+		       	          n1++;
+		       }
+		       else
+		       {
+		       	   block1[i].y=block1[i].y+block1[i].vy;
+		       }
+		    }
+	    
+    }
+    function frequency()
+    {
+        if(freq1==230)
+        {
+        	b={x:((Math.random()*6)+1.5)+50,y:-100*(block1.length-1),vy:5,status:0};
+        	
+        	b.color=colors[Math.round(Math.random()*(colors.length-1))];
+	       	block1.push(b);
+	       	freq1=0;
+	       // console.log(block1.length);
+        }
+        if(freq2==280)
+        {
+        	c={x:((Math.random()*6)+1.6)+250,y:-100*(block2.length-1),vy:5,status:0};console.log(b.x);
+        	c.color=colors[Math.round(Math.random()*(colors.length-1))];
+	       	block2.push(c);
+	       	freq2=0;
+	       // console.log(block2.length);
+        }
+    }
+    function detector(count1,count2,q,k,r,b)
+    {
+    	//console.log("called","k=" ,k,"q=",q,"r=",r,"c1=",count1,"c2=",count2);
+    	if(count1&&count1+count2>3)
+         {   //block2.splice(q-(count1+1),count1+1);
+         	  b.splice(q-(count1+1),count1+1);
+         	  score=score+(count1+1);
+         	  if(b===block2)
+         	     n2=n2-(count1+1);
+         	 else
+         	 	n1=n1-(count1+1);
+         }
+        if(count2&&count1+count2>3)
+        {     //block2.splice(r+1,count2);
+        	  b.splice(r+1,count2);
+        	  score=score+(count2);
+        	  if(b===block2)
+        	  {
+        	  	n2=n2-(count2);
+        	    if(count1==0)
+                  n2--;
+        	  }
+        	  else
+        	  {
+        	  	n1=n1-(count2);
+        	    if(count1==0)
+                  n1--;
+        	  }
+          }
+      // console.log(block2.length,n2);
+       for(var g=r+1;g<b.length;g++)
+                {
+
+                	if(b[g].status==1&&count1+count2>3)
+                	 {  b[g].y=b[g].y+blockHeight*(count1+count2+1);
+                	 	
+                	 }
+                }
+          if(count1+count2>3)
+          {
+          	var temp=0;
+          	while(temp<200)
+          	{
+          		console.log("called");
+               pencil.drawImage(bomb,b[k].x,b[k].y,200,150);temp++;
+          	}
+          }
+    }
+    function moveright(mouseX,mouseY)
+    {
+    	var k,i;
+    	for(i=0;i<block1.length;i++)
+    	{
+
+    		if(mouseX>=block1[i].x&&mouseX<=block1[i].x+blockWidth&&mouseY>=block1[i].y&&mouseY<=block1[i].y+blockHeight)
+    		{
+    			n1--;
+    			var j;
+    			for(j=i+1;j<block1.length;j++)
+    			{	
+    				if(block1[j].status==1)
+    				{
+    					break;
+    				}
+    			}
+    			for(var h=j;h<block1.length;h++)
+    			{
+    				if(block1[h].status==1)
+    				    block1[h].y+=blockHeight;
+    			}
+    			while(block1[i].x<=230)
+    			{
+    				block1[i].x+=10;
+    			}
+    			
+                for(k=0;k<block2.length;k++)
+                {
+                	if(block1[i].y>=block2[k].y&&block2[k].status==1)
+                	{
+                         break;
+                	}
+                }
+                
+               for(var g=k;g<block2.length;g++)
+                {
+
+                	if(block2[g].status==1)
+                	   block2[g].y-=blockHeight;
+                }
+                n2++;
+    			break;
+    		}
+    	}
+    	
+    	block1[i].x=250;
+        block2.splice(k,0,block1[i]);//adding  1 block to block2
+        
+        var q,r,count1=0,count2=0;
+        for(q=k+1;q<block2.length;q++)
+        {
+        	if(block2[q].color!=block1[i].color)
+        		break;
+        	if(block2[q].color==block1[i].color&&block2[q].status==1)
+        		count1++;
+        }
+        for(r=k-1;r>=0;r--)
+        {
+        	if(block2[r].color!=block1[i].color)
+        		break;
+        	if(block2[r].color==block1[i].color&&block2[r].status==1)
+        		count2++;
+        }
+        detector(count1,count2,q,k,r,block2);
+        block1.splice(i,1);//removing 1 block from block1
+    }
+    function moveleft(mouseX,mouseY)
+    {
+    	var k,i;
+    	for(i=0;i<block2.length;i++)
+    	{
+    		if(mouseX>=block2[i].x&&mouseX<=block2[i].x+blockWidth&&mouseY>=block2[i].y&&mouseY<=block2[i].y+blockHeight)
+    		{
+    			n2--;
+    			var j;
+    			for(j=i+1;j<block2.length;j++)
+    			{	
+    				if(block2[j].status==1)
+    				{
+    					break;
+    				}
+    			}
+    			for(var h=j;h<block2.length;h++)
+    			{
+    				if(block2[h].status==1)
+    				    block2[h].y+=blockHeight;
+    			}
+    			while(block2[i].x>=70)
+    			{
+    				block2[i].x-=10;
+    			}
+                for(k=0;k<block1.length;k++)
+                {
+                	if(block2[i].y>=block1[k].y&&block1[k].status==1)
+                	{
+                         break;
+                	}
+                }
+                for(var g=k;g<block1.length;g++)
+                {
+                	if(block1[g].status==1)
+                	   block1[g].y-=blockHeight;
+                }
+                n1++;
+    			break;
+    		}
+    	}
+    	block2[i].x=50;
+        block1.splice(k,0,block2[i]);//adding  1 block to block1
+        var q,r,count1=0,count2=0;
+        for(q=k+1;q<block1.length;q++)
+        {
+        	if(block1[q].color!=block2[i].color)
+        		break;
+        	if(block1[q].color==block2[i].color&&block1[q].status==1)
+        		count1++;
+        }
+        for(r=k-1;r>=0;r--)
+        {
+        	if(block1[r].color!=block2[i].color)
+        		break;
+        	if(block1[r].color==block2[i].color&&block1[r].status==1)
+        		count2++;
+        }
+        detector(count1,count2,q,k,r,block1);
+        block2.splice(i,1);//removing 1 block from block2
+    }
+    function ondown(e)
+    {
+    	var mouseX=e.clientX;
+    	var mouseY=e.clientY;
+    	if(mouseX>=block1[0].x&&mouseX<=block1[0].x+blockWidth)
+    	{
+    		moveright(mouseX,mouseY);
+    	}
+    	else if(mouseX>=block2[0].x&&mouseX<=block2[0].x+blockWidth)
+    	{
+    		moveleft(mouseX,mouseY);
+    	}
+    	//console.log(n2);
+    	
+    }
+    function draw()
+    {
+       pencil.clearRect(0,0,canvas.width,canvas.height);
+      
+       drawBlocks();
+       POSofBlocks();
+       canvas.addEventListener("click",ondown,false);
+       freq1++;freq2++;
+       frequency();
+       if(n1*blockHeight>=canvas.height||n2*blockHeight>=canvas.height)
+       {
+       	  stopgame();
+       	  clearInterval(timer);
+       }
+    }
+    var timer=setInterval(draw,10);
+</script>
+</body>
+</html>

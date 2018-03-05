@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		canvas{
+                background-color:white;
+		}
+
+	</style>
+	
+</head>
+<body>
+<canvas id="rain" class="canvas" width="800" height="600"></canvas>
+<script type="text/javascript">
+   var canvas=document.getElementById("rain");
+   var pencil=canvas.getContext("2d");
+   var cloud=new Image();
+   cloud.src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiiS0aQWhhrz3p0HD-rCvdeSn27fwQF9kaT6_cp4YFxWGCIgHo";
+   var cloudX=10;
+   var cloudX2=260;
+   var cloudX3=480;
+   var drop=[];
+   for(var i=0;i<350;i++)
+   	   drop[i]={x:(Math.round((Math.random())*canvas.width)),y:-200,status:1}
+   var yspeed=1;
+   var radius=550;
+   function drawDrop()
+   {
+   	for(var i=0;i<350;i++)
+   	{
+   		var dropWidth=Math.round((Math.random())*3);
+   	   yspeed=Math.round((Math.random())*30)+1; 
+   	   if(drop[i].status==1)
+   	   {
+   	   	yspeed=yspeed+(Math.round((Math.random())*1)+0.02);
+   	   	drop[i].y=drop[i].y+yspeed;
+   	   }
+   	   else
+   	   {
+   	   	drop[i].x=Math.round((Math.random())*canvas.width);
+   	   	drop[i].y=-200;drop[i].status=1;
+   	   }
+   	   
+   	   
+   	   //*(Math.round((Math.random())*0.1-0.02)+0.02);
+       pencil.beginPath();
+       pencil.rect(drop[i].x,drop[i].y,dropWidth,Math.round((Math.random())*20)+10);
+       pencil.fillStyle="purple";
+       pencil.fill();
+       pencil.closePath();
+   	}
+   	   
+   }
+   function drawRainbow()
+   {
+      
+     var colors=["yellow","red","indigo","blue","violet","green","orange"];
+   	 for(var i=0;i<4;i++)
+   	  {
+       pencil.beginPath();
+       pencil.arc(130,700,radius-(20*i),0,2*Math.PI);
+       var j=Math.floor((Math.random()*6));
+       pencil.lineWidth=16;
+       pencil.strokeStyle=colors[j];
+      // pencil.fill();
+       pencil.stroke();
+       
+   	 }
+       
+   }
+   function drawclouds()
+   {
+   	  pencil.drawImage(cloud,cloudX,10,200,100);
+   	  pencil.drawImage(cloud,cloudX2,30,200,100);
+   	  pencil.drawImage(cloud,cloudX3,20,200,100);
+   	  if(cloudX>canvas.width)
+   	  	{cloudX=0;}
+   	  else if(cloudX2>canvas.width)
+   	  	cloudX2=0;
+   	  else if(cloudX3>canvas.width)
+   	  	cloudX3=0;
+   	  else
+   	  	{cloudX++;cloudX2++;cloudX3++;}
+   }
+   function draw()
+   {
+   	  pencil.clearRect(0,0,canvas.width,canvas.height);
+   	  
+   	  
+   	  drawRainbow();
+   	  drawclouds();
+   	  drawDrop();
+      
+      for(var i=0;i<350;i++)
+      {
+      	if(drop[i].y>canvas.height)
+      	{
+      		drop[i].status=0;
+      	}
+      }
+
+   }
+   setInterval(draw,20);
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		canvas{
+			background-color:black;
+		}
+	</style>
+</head>
+<body>
+<canvas id="ss" class="canvas" width="1500" height="700"></canvas>
+<script type="text/javascript">
+	var canvas=document.getElementById("ss");
+	var pencil=canvas.getContext("2d");
+	var bat=new Image();
+	bat.src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLKec8e9MCLcIUzrTc0TnqXKlbaFpXC82m-9ywHAcRITC2BLOtqA";
+	var colors=["yellow","orange","purple","grey","white","violet","blue","indigo","pink","green","red","cyan","lightgreen","lightblue","skyblue"];
+	var bubbles=[];
+	var count=7;
+	for(var i=0;i<count;i++)
+		bubbles[i]={x:Math.round(Math.random()*canvas.width-100)+75,y:Math.round(Math.random()*canvas.height-100)+75,rad:(Math.round(Math.random()*40)+30),xspeed:(Math.random()*2)+(-2),yspeed:(Math.random()*2)+(-2),color:colors[Math.round(Math.random()*colors.length)],touchStatus:0}
+	var bubbleX;
+	var bubbleY;
+	var radius;
+	function distance(x1,y1,x2,y2)
+	{
+		var t=Math.pow(x1-x2,2);
+		var s=Math.pow(y1-y2,2);
+		var u=Math.sqrt(t+s);
+		return u;
+	}
+	
+	function drawBubbles()
+	{
+		for(var i=0;i<count;i++)
+		{
+			bubbles[i].x=bubbles[i].x+bubbles[i].xspeed;
+			bubbles[i].y=bubbles[i].y+bubbles[i].yspeed;
+			if(bubbles[i].touchStatus==0)
+			{
+			radius=bubbles[i].rad;
+			pencil.beginPath();
+			pencil.arc(bubbles[i].x,bubbles[i].y,radius,0,2*Math.PI);
+			pencil.fillStyle=bubbles[i].color;
+			//pencil.lineWidth=5;
+			//pencil.stroke();
+			pencil.fill();
+			}
+			else
+			{
+                   pencil.drawImage(bat,bubbles[i].x,bubbles[i].y,150,75);
+			}
+		}
+		
+	}
+	function intersect(a,b)
+		{
+          var d=distance(a.x,a.y,b.x,b.y);
+           if(d<a.rad+b.rad)
+           	    return true;
+           	else 
+           		return false;
+		}
+	function ondown(e)
+	{
+		
+		var mouseX=e.clientX;
+		var mouseY=e.clientY;
+		
+        for(var i=0;i<count;i++)
+        {
+        	var dis=distance(bubbles[i].x,bubbles[i].y,mouseX,mouseY);
+        	//console.log(dis);
+        	if(dis<bubbles[i].rad)
+        		 {
+        		 	bubbles[i].color="white";
+        		 	bubbles[i].touchStatus=1;
+        		 	//bubbles.splice(i,1);
+        		 	bubbles.push(bat);
+        		 	console.log(bubbles.length);
+        		 }  
+        }
+	}
+	function draw()
+	{
+		pencil.clearRect(0,0,canvas.width,canvas.height);
+		drawBubbles();
+		for(var i=0;i<count;i++)
+		{
+			if(bubbles[i].x+bubbles[i].rad>canvas.width||bubbles[i].x<bubbles[i].rad)
+				bubbles[i].xspeed=-bubbles[i].xspeed;
+			if(bubbles[i].y+bubbles[i].rad>canvas.height||bubbles[i].y<bubbles[i].rad)
+				bubbles[i].yspeed=-bubbles[i].yspeed;
+		}
+        for(var i=0;i<count;i++)
+        {
+        	for(var j=0;j<count&&j!=i;j++)
+        	{
+        		if(intersect(bubbles[i],bubbles[j]))
+        		{
+        			bubbles[j].xspeed=-bubbles[j].xspeed;
+        			bubbles[i].xspeed=-bubbles[i].xspeed;
+        			bubbles[j].yspeed=-bubbles[j].yspeed;
+        			bubbles[i].yspeed=-bubbles[i].yspeed;
+        			bubbles[j].color=colors[Math.round(Math.random()*colors.length)];
+        		}
+        	}
+        }
+        
+       canvas.addEventListener("click",ondown,false);
+        
+	}
+	setInterval(draw,8);
+</script>
+</body>
+</html>

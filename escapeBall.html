@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		canvas{
+			background-color:indigo;
+		}
+	</style>
+</head>
+<body>
+<canvas id="game" class="canvas" width="600" height="600" ></canvas>
+<script type="text/javascript">
+	var canvas=document.getElementById("game");
+	var pencil=canvas.getContext("2d");
+	var framerate=100;
+	var radius=80;
+    var degtorad=0.0174533;
+    var radtodeg=57.324807;
+	var ball={x:canvas.width/2,y:canvas.height/2,vx:0,vy:0}
+	var ballradius=10;
+	var pointerlength=20;
+	var pointer=-4;
+	var pointerSpeed=4;
+	var sa1=0;
+    var ea1=2;
+    var sa2,ea2,sa3,ea3,sa4,ea4;
+    var arrowX=canvas.width/2;
+    var arrowY=canvas.height/2;
+    var spacekey=false;
+    var colors=["red","blue","green","violet"];
+    var level=1;
+    var score=0;
+    var angle=[];
+    var i=1;
+    for(var j=0;j<4;j++)
+    	angle[j]={sa:0,ea:0}
+    if(i==1)
+    {
+		angle[0].sa=0;angle[0].ea=2;angle[1].sa=3;angle[1].ea=5;
+    }
+    var arcs={f:function(){
+    		         runner();}};
+    document.addEventListener("keyup",keyuphandler,false);
+    document.addEventListener("keydown",keydownhandler,false);
+    function keyuphandler(e)
+    {
+    	if(e.keyCode==32)
+    		spacekey=true;
+    }
+    function keydownhandler(e)
+    {
+    	if(e.keyCode==32)
+    		 spacekey=false;
+    }
+	function runner()
+	{
+		for(var l=0;l<=i;l++)
+		{
+			pencil.beginPath();
+			pencil.arc(300,300,radius,angle[l].sa,angle[l].ea);
+			pencil.strokeStyle=colors[l];
+			pencil.lineWidth=5;
+			pencil.stroke();  
+		}
+	}
+	function drawball()
+	{
+		pencil.beginPath();
+		pencil.arc(ball.x,ball.y,ballradius,0,2*Math.PI);
+		pencil.fillStyle="black";
+		pencil.fill();
+	}
+	function drawArrow()
+	{
+		pencil.save();
+		pencil.translate(300,300);
+		pencil.rotate(pointer*0.0174533);
+		pencil.translate(-300,-300);
+        pencil.beginPath();
+        pencil.rect(arrowX,arrowY,pointerlength,1);
+        pencil.fillStyle="black";
+        pencil.fill();
+        pencil.closePath();
+        
+        pencil.restore();
+	}
+	function hypotenus(x1,y1)
+	{
+		var t=Math.pow(x1,2);
+		var s=Math.pow(y1,2);
+		var u=Math.sqrt(t+s);
+		return u;
+	}
+	function stopgame()
+	{
+        pencil.font="30px Consolas";
+    	pencil.fillStyle="black";
+    	pencil.fillText("SCORE : " +(score)*(level),250 , 200);
+
+	}
+	function leveldisplay()
+	{
+		pencil.font="30px Consolas";
+    	pencil.fillStyle="yellow";
+    	pencil.fillText("level : " +level,450 , 50);
+	}
+	function draw()
+	{
+		pencil.clearRect(0,0,canvas.width,canvas.height);
+		arcs.f();
+		for(var k=0;k<=i;k++)
+		{
+			angle[k].sa=(angle[k].sa+0.1)%6; angle[k].ea=(angle[k].ea+0.1)%6;
+		}
+		if(spacekey!=true)
+	    {
+	      drawball();
+	      pointer=(pointer+pointerSpeed)%360;
+	      drawArrow();
+	     }
+	    if(spacekey==true)
+	    {
+               ball.vx=Math.cos((pointer)*0.0174533)*pointerlength;
+               ball.vy=Math.sin((pointer)*0.0174533)*pointerlength;
+               if(!(ball.x>canvas.width||ball.x<0||ball.y>canvas.height||ball.y<0))
+               {
+               	   ball.x=ball.x+4*ball.vx;
+               	   ball.y=ball.y+4*ball.vy;
+               	   drawball();
+               }
+               for(var k=0;k<=i;k++)
+               {
+
+               	    if((pointer/60>angle[k].sa&&pointer/60<angle[k].ea&&hypotenus(ball.x-canvas.width/2,ball.y-canvas.height/2)>radius))
+	               	 {     stopgame();
+	               	 	   clearInterval(timefreq);
+	               	 }
+               }
+               
+               
+	    }  //console.log(pointer/60,angle[0].sa,angle[0].ea);
+	    if(hypotenus(ball.x-canvas.width/2,ball.y-canvas.height/2)>radius+200)
+               {
+                     ball.x=canvas.width/2;
+                     ball.y=canvas.height/2;
+                     drawball();
+                     pointer=0;
+                     drawArrow();
+                     score++;
+                     spacekey=false;
+               }
+       if(score==5&&level==1)
+    	{
+    		level++;i++;
+    
+		    	angle[0].sa=0;angle[0].ea=1.3;angle[1].sa=2;angle[1].ea=3.3;angle[2].sa=4;angle[2].ea=5.3;
+		    	canvas.style.backgroundColor="cyan";
+    	}
+    	if(score>=20&&level==2)
+    	{
+    		level++;i++;
+    	    angle[0].sa=0;angle[0].ea=0.8;angle[1].sa=1.5;angle[1].ea=2.3;angle[2].sa=3;angle[2].ea=4;angle[3].sa=4.3;angle[3].ea=5.3;
+    	    canvas.style.backgroundColor="lightpink";
+    	}
+    	leveldisplay();
+	}
+	var timefreq=setInterval(draw,framerate);
+</script>
+</body>
+</html>
