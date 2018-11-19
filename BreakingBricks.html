@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+	<title></title>
+	<style type="text/css">
+		canvas{
+			background-color: black;
+			border-color: red;
+			margin-left: 150px;
+		}
+	</style>
+</head>
+<body>
+<canvas id="game" class="canvas" width="1200" height="600"></canvas>
+   <script type="text/javascript">
+   	var canvas=document.getElementById("game");
+   	var pencil=canvas.getContext("2d");
+    var ballRadius="15";
+    var x=canvas.width/2;
+    var y=canvas.height-ballRadius-10-30;
+    var speedX=8;
+    var speedY=-6;
+
+    var paddleHeight=10;
+    var p=canvas.width/2-50;
+    var q=canvas.height-(2*ballRadius)-paddleHeight;
+    var paddleWidth=200;
+    var rightArrow=false;
+    var leftArrow=false;
+    
+    var score=0;
+    var lives=3;
+
+    var i,j;
+    var brickWidth=100;
+    var brickHeight=30;
+    var brickColor="lightblue";
+    var leftOffset=50;
+    var topOffset=10;
+    var brickPadding=10;
+    var verCount=5;
+    var horizCount=10;
+    var bricks=[];
+    for( i=0;i<verCount;i++)
+    {
+    	bricks[i]=[];
+    	for( j=0;j<horizCount;j++)
+    	{
+    		bricks[i][j] ={x:0,y:0,status:1}; //setting x and y properties to our bricks array
+    		
+    	}
+    }
+
+    document.addEventListener("keyup",keyUpHandlerFunction,false);
+    document.addEventListener("keydown",keyDownHandlerFunction,false);
+
+    function keyUpHandlerFunction(e)
+    {
+    	if(e.keyCode==39)
+    		rightArrow=false;
+    	if(e.keyCode==37)
+    		 leftArrow=false;
+    }
+    function keyDownHandlerFunction(e)
+    {
+    	if(e.keyCode==39)
+    		rightArrow=true;
+    	if(e.keyCode==37)
+    		 leftArrow=true;
+    }
+   
+    function drawingball()
+    {
+    	    pencil.beginPath();
+		   	pencil.arc(x,y,ballRadius,0,Math.PI*2,false);
+		   	pencil.fillStyle="red";
+		   	pencil.fill();
+		   	pencil.closePath();
+    }
+    function drawingPaddle()
+    {
+    	   pencil.beginPath();
+    	   pencil.rect(p,q,paddleWidth,paddleHeight);
+    	   pencil.fillStyle="yellow";
+    	   pencil.fill();
+    	   pencil.closePath();
+    }
+    function drawBricks()
+    {
+    	   for( i=0;i<verCount;i++)
+    	   {
+    	   	  for(j=0;j<horizCount;j++)
+    	   	  {
+    	   	  	if(bricks[i][j].status==1)
+    	   	  	{
+    	   	     var bx=(j*(brickWidth+brickPadding))+leftOffset;
+    	   	  	 var by=(i*(brickHeight+brickPadding))+topOffset;
+    	   	  	 bricks[i][j].x=bx;
+    	   	  	 bricks[i][j].y=by;
+    	   	  	 pencil.beginPath();
+    	   	  	 pencil.rect(bx,by,brickWidth,brickHeight);
+    	   	  	 pencil.fillStyle=brickColor;
+    	   	  	 pencil.fill();
+    	   	  	 pencil.closePath();
+    	   	  	}
+    	   	  	 
+    	   	  }
+    	   }
+    }
+    function winner()
+    {
+    	pencil.font="50px Arial";
+    	pencil.fillStyle="white";
+    	pencil.fillText("YOU WON !!",500,300);
+    	addScore();
+    	clearInterval(timer);
+    }
+    function collideDetection()
+    {
+    	for(i=0;i<verCount;i++)
+    	{
+    		for(j=0;j<horizCount;j++)
+    		{
+    			var temp=bricks[i][j];
+    			if(y-ballRadius < temp.y+brickHeight && x > temp.x && x < temp.x + brickWidth && temp.status==1 )
+    				{speedY = -speedY;temp.status=0;score = score + 10;}
+    			if(score==500)
+    				winner();
+    		}
+    	}
+    }
+    function addScore()
+    {
+    	pencil.font="30px Consolas";
+    	pencil.fillStyle="red";
+    	pencil.fillText("SCORE : " +score*(lives+1),550 , 250);
+    }
+    function life()
+    {
+    	pencil.font="20px Consolas";
+    	pencil.fillStyle="red";
+    	pencil.fillText("paddleLives :" +lives ,1000 , 250);
+    }
+   	function draw()
+   	{
+   		pencil.clearRect(0,0,canvas.width,canvas.height);
+   		
+   		drawBricks();
+        drawingball();
+        
+	    if(x + speedX > canvas.width-ballRadius || x + speedX < ballRadius) {
+        speedX = -speedX;
+	    }
+	    if(/*y + speedY > canvas.height-ballRadius*/  y + speedY < ballRadius ) {
+	        speedY = -speedY;
+	    }
+	    else if(y + speedY > canvas.height-ballRadius || y + speedY > canvas.height - 30 - paddleHeight && x + speedX >p && x + speedX < p + paddleWidth )
+	    {
+	    	 if(y + speedY > canvas.height - 30 - paddleHeight && x + speedX >p && x + speedX < p + paddleWidth)
+		    {
+		    	speedY = -speedY;
+		    }
+		    else if(y  >= canvas.height-ballRadius)
+		    {
+		    	//alert("GAME OVER");
+		    	//document.location.reload();
+		    	lives--;
+		    	if(lives==0)
+		    	{
+		    		addScore();
+		    		clearInterval(timer);
+		    	}
+		    	else
+		    	{
+		    		x=canvas.width/2;
+                    y=canvas.height-ballRadius-10-30;
+		    		p=canvas.width/2-50;
+                    q=canvas.height-(2*ballRadius)-paddleHeight;
+                    drawingball();
+                    drawingPaddle();
+		    	}
+		    }
+	    }
+	   
+        x=x+speedX;
+	    y=y+speedY;
+        
+       drawingPaddle();
+
+       if(rightArrow==true&&p<canvas.width-paddleWidth)
+       	       p=p+7;
+       if(leftArrow==true&&p>0)
+       	       p=p-7;
+        life();
+       	collideDetection();
+       	
+	   
+   	}
+   	var timer=setInterval(draw,20);
+   </script>
+</body>
+</html>
