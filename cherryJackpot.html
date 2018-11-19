@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cherry Jackpot</title>
+
+	<style type="text/css">
+	     body{
+	     	background:linear-gradient(to top left,rgb(255, 102, 102),rgb(153, 31, 0));
+	     	background-repeat: no-repeat;
+	     	background-size: 100% 100vw;
+	     }
+		.game{
+			margin-left:25%;
+			margin-top: 15%;
+			width:44.5%;
+		}
+		.btns{
+			display: inline-block;
+			margin-left:0%;
+			margin-top:5%;
+			width:10%;
+			height: 10%;
+		}
+		 .btns #btn{
+		 	position: absolute;
+			width:15%;
+			height:10%;
+			margin-top:0%;
+			margin-left:50%;
+			border:none;
+			border-radius:25%;
+			font-size:2vw;
+			background:linear-gradient(to right,rgb(0, 204, 255),rgb(0, 255, 255)); 
+			cursor: pointer;
+		}
+		 .btns #btn2{
+		 	position: absolute;
+			width:15%;
+			height:10%;
+			margin-top:0%;
+			margin-left:28%;
+			border:none;
+			border-radius:25%;  
+			font-size:2vw;
+			background:linear-gradient(to left,rgb(0, 204, 255),rgb(0, 255, 255));
+			cursor: pointer;
+		}
+		#score{
+			font-size: 30px;
+			margin-left: 40%;
+			font-color:cyan;
+		}
+    *:focus{
+      outline:none;
+    }
+	</style>
+</head>
+<body>
+  <div class="btns">
+     <button id="btn2" onclick="starter()">START</button>
+     <button id="btn" onclick="stopper()">STOP</button>
+  </div>
+  <div class="game">
+  	<canvas id="box1" width="200" height="300" style="border: 10px solid black"></canvas>
+  	<canvas id="box2" width="200" height="300" style="border: 10px solid black"></canvas>
+  	<canvas id="box3" width="200" height="300" style="border: 10px solid black"></canvas>
+  </div>
+  <div id="score">
+  	 
+  </div>
+</body>
+<script type="text/javascript">
+	var canvas1=document.getElementById("box1");
+	var pencil1=canvas1.getContext("2d");
+	var canvas2=document.getElementById("box2");
+	var pencil2=canvas2.getContext("2d");
+	var canvas3=document.getElementById("box3");
+	var pencil3=canvas3.getContext("2d");
+	var images=[];
+	
+	images[0]=new Image();
+	images[0].src="jackpotimages/aquaman.jpg";
+	images[1]=new Image();
+	images[1].src="jackpotimages/batman.jpg";
+	images[2]=new Image();
+	images[2].src="jackpotimages/captainamerica.jpg";
+	images[3]=new Image();
+	images[3].src="jackpotimages/flash.jpg";
+	images[4]=new Image();
+	images[4].src="jackpotimages/spiderman.jpg";
+	images[5]=new Image();
+	images[5].src="jackpotimages/superman.jpg";
+	images[6]=new Image();
+	images[6].src="jackpotimages/thor.jpg";
+	images[7]=new Image();
+	images[7].src="jackpotimages/wonderwoman.jpg";
+    
+    var stopi1,stopi2,stopi3;
+    var imageheight=canvas1.height;
+    var flag=0;
+	var n=8;
+	var imagePOS=[];
+    var image2POS=[];
+    var image3POS=[];
+    var stopvar=0;
+	for(var i=0;i<8;i++)
+	{
+		if(i==0)
+		{
+			imagePOS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:0,val:2}
+		    image2POS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:0,val:2}
+		    image3POS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:0,val:2}
+		}
+		else 
+		{
+			imagePOS[i]={x:0,y:imagePOS[i-1].y-imageheight,yspeed:0,val:2*(i+1)%5}
+            image2POS[i]={x:0,y:image2POS[i-1].y-imageheight,yspeed:0,val:2*(i+1)%5}
+		    image3POS[i]={x:0,y:image3POS[i-1].y-imageheight,yspeed:0,val:2*(i+1)%5}
+		}
+	}
+	function starter()
+    {
+        for(var i=0;i<8;i++)
+	   {
+		if(i==0)
+		{
+			imagePOS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:30,val:2}
+		    image2POS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:50,val:2}
+		    image3POS[i]={x:0,y:-100*(i+1)-imageheight,yspeed:40,val:2}
+		}
+		else 
+		{
+			imagePOS[i]={x:0,y:imagePOS[i-1].y-imageheight,yspeed:30,val:2*(i+1)%5}
+            image2POS[i]={x:0,y:image2POS[i-1].y-imageheight,yspeed:50,val:2*(i+1)%5}
+		    image3POS[i]={x:0,y:image3POS[i-1].y-imageheight,yspeed:40,val:2*(i+1)%5}
+		}
+	   }
+	   flag=1;
+    }
+	function stopper()
+	{
+		stopvar=1;
+	}
+	function addScore()
+	{
+         var score=0;
+         if((stopi1==stopi2)&&(stopi2==stopi3)&&(stopi3==stopi1))
+         {
+         	score=imagePOS[stopi1].val+imagePOS[stopi2].val+imagePOS[stopi3].val+Math.round(Math.random()*3);
+         }
+       
+         document.getElementById("score").innerHTML="SCORE : "+score;
+	}
+    function draw() {
+    	pencil1.clearRect(0,0,canvas1.width,canvas1.height);
+    	pencil2.clearRect(0,0,canvas2.width,canvas2.height);
+    	pencil3.clearRect(0,0,canvas3.width,canvas3.height);
+    	if(flag==0)
+        {
+        	pencil1.font="50px Arial";
+	        pencil1.fillStyle="white";
+	        pencil1.fillText("START",20,150);
+	        pencil2.font="50px Arial";
+	        pencil2.fillStyle="orange";
+	        pencil2.fillText("THE",50,150);
+	        pencil3.font="50px Arial";
+	        pencil3.fillStyle="white";
+	        pencil3.fillText("GAME",20,150);
+        }
+    	if(stopvar==1)
+    	{
+    		
+    		for(var i=0;i<n;i++)
+    		{
+                  if(imagePOS[i].y+imageheight+30>canvas1.height)
+                  { 
+                    if(i==n-1)
+                        stopi1=0;
+                    else
+                  	    stopi1=i+1;
+                  	break;
+                  }
+    		}
+    		for(var i=0;i<n;i++)
+    		{
+                  if(image2POS[i].y+imageheight+30>canvas2.height)
+                  { 
+                    if(i==n-1)
+                        stopi2=0;
+                    else
+                  	    stopi2=i+1;
+                  	break;
+                  }
+    		}
+    		for(var i=0;i<n;i++)
+    		{
+                  if(image3POS[i].y+imageheight+30>canvas3.height)
+                  { 
+                    if(i==n-1)
+                        stopi3=0;
+                    else
+                  	    stopi3=i+1;
+                  	break;
+                  }
+    		}
+            console.log(stopi1,stopi2,stopi3);
+            if(imagePOS[stopi1].y+imageheight>canvas1.height)
+            {
+            	while(imagePOS[stopi1].y>=0)
+    			{	
+    			  imagePOS[stopi1].y=imagePOS[stopi1].y-0.05;
+    			  pencil1.drawImage(images[i],imagePOS[i].x,imagePOS[i].y,canvas1.width,imageheight);
+    			
+    	    	}
+            }
+            else if(imagePOS[stopi1].y+imageheight+30<=canvas1.height)
+            {
+            	while(imagePOS[stopi1].y+imageheight+30<=canvas1.height)
+    			{	
+    				imagePOS[stopi1].y=imagePOS[stopi1].y+0.05;
+    			    pencil1.drawImage(images[i],imagePOS[i].x,imagePOS[i].y,canvas1.width,imageheight);
+    			
+    	    	}
+            }
+            if(image2POS[stopi2].y+imageheight>canvas2.height)
+            {
+            	while(image2POS[stopi2].y>=0)
+    			{	
+    			  image2POS[stopi2].y=image2POS[stopi2].y-0.05;
+    			  pencil2.drawImage(images[i],image2POS[i].x,image2POS[i].y,canvas2.width,imageheight);
+    			
+    	    	}
+            }
+            else if(image2POS[stopi2].y+imageheight+50<=canvas2.height)
+            {
+            	while(image2POS[stopi2].y+imageheight+50<=canvas2.height)
+    			{	
+    			pencil2.drawImage(images[i],image2POS[i].x,image2POS[i].y,canvas2.width,imageheight);
+    			image2POS[stopi2].y=image2POS[stopi2].y+0.05;
+    	    	}
+            }
+    		
+    	    if(image3POS[stopi3].y+imageheight>canvas3.height)
+            {
+            	while(image3POS[stopi3].y>=0)
+    			{	
+    			  image3POS[stopi3].y=image3POS[stopi3].y-0.05;
+    			  pencil3.drawImage(images[i],image3POS[i].x,image3POS[i].y,canvas3.width,imageheight);
+    			
+    	    	}
+            }
+            else if(image3POS[stopi3].y+imageheight+40<=canvas3.height)
+            {
+            	while(image3POS[stopi3].y+imageheight+40<=canvas3.height)
+    			{	
+    			pencil3.drawImage(images[i],image3POS[i].x,image3POS[i].y,canvas3.width,imageheight);
+    			image3POS[stopi3].y=image3POS[stopi3].y+0.05;
+    	    	}
+            }
+            clearInterval(timer);
+             addScore();
+           
+    		
+
+    	}
+    	for(var i=0;i<n;i++)
+    	{
+
+    		if(i==0&&imagePOS[i].y>canvas1.height)
+    			imagePOS[0].y=imagePOS[n-1].y-canvas1.height;
+    		else if(imagePOS[i].y>canvas1.height)
+    			imagePOS[i].y=imagePOS[i-1].y-canvas1.height;
+
+    		if(i==0&&image2POS[i].y>canvas2.height)
+    			image2POS[0].y=image2POS[n-1].y-canvas2.height;
+    		else if(image2POS[i].y>canvas2.height)
+    			image2POS[i].y=image2POS[i-1].y-canvas2.height;
+
+    		if(i==0&&image3POS[i].y>canvas3.height)
+    			image3POS[0].y=image3POS[n-1].y-canvas3.height;
+    		else if(image3POS[i].y>canvas3.height)
+    			image3POS[i].y=image3POS[i-1].y-canvas3.height;
+    	}
+        for(var i=0;i<n;i++)
+        {
+        	imagePOS[i].y+=imagePOS[i].yspeed;
+        	pencil1.drawImage(images[i],imagePOS[i].x,imagePOS[i].y,canvas1.width,canvas1.height);
+        	image2POS[i].y+=image2POS[i].yspeed;
+        	pencil2.drawImage(images[i],image2POS[i].x,image2POS[i].y,canvas2.width,canvas2.height);
+        	image3POS[i].y+=image3POS[i].yspeed;
+        	pencil3.drawImage(images[i],image3POS[i].x,image3POS[i].y,canvas3.width,canvas3.height);
+        }  	
+  
+    }
+
+   /* var fruits = [[]];
+    for(var i=0;i<5;i++)
+    {
+        for(var j=0;j<4;j++)
+        {
+           fruits[i].push("h");
+        }
+    }
+    console.log(fruits[0][2]);*/
+    var timer=setInterval(draw,10);
+    
+</script>
+</html>
